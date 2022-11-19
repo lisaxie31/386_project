@@ -1,15 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import math
 
-min = 10 #37
-max = 50 #47
+min = 0 #37
+max = 100 #47
 
-df = pd.read_csv('rock1.csv')
+df = pd.read_csv('paper1.csv')
 df['Distance'] = pd.to_numeric(df['Distance'])
 
-def getDistance(x, y , distance): 
-    new_distance = distance
-    return new_distance
+def getValues(x, y , distance): 
+    values = []
+    values.append(distance * math.cos(math.radians(y)) * math.sin(math.radians(x)))
+    values.append(distance * math.cos(math.radians(x)) * math.sin(math.radians(y)))
+    values.append(distance * math.cos(math.radians(y)) * math.cos(math.radians(x)))
+    return values
 
 def getX(x):
     return x
@@ -18,17 +22,17 @@ def getY(y):
     return y
 
 for x in df.index:
-    cur_distance = getDistance(df.loc[x, 'x'], df.loc[x, 'y'], df.loc[x, 'Distance'])
+    values = getValues(df.loc[x, 'x'], df.loc[x, 'y'], df.loc[x, 'Distance'])
 
     # filter range
-    if cur_distance < min or cur_distance > max:
+    if values[2] < min or values[2] > max:
         df.drop(x, inplace = True)
     
     # convert from angle to distance
     else:
-        df.loc[x, 'x'] = getX(df.loc[x, 'x'])
-        df.loc[x, 'y'] = getY(df.loc[x, 'y'])
-        df.loc[x, 'Distance'] = cur_distance
+        df.loc[x, 'x'] = values[0]
+        df.loc[x, 'y'] = values[1]
+        df.loc[x, 'Distance'] = values[2]
 
 df.plot(kind = 'scatter', x = 'x', y = 'y', c = 'Distance', colormap= 'viridis')
 
