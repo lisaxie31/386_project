@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import math
 
 min = 0 #37
-max = 100 #47
+max = 50 #47
 
-df = pd.read_csv('paper1.csv')
-df['Distance'] = pd.to_numeric(df['Distance'])
+df = pd.read_csv('paper3.csv')
+# df['Distance'] = pd.to_numeric(df['Distance'])
 
 def getValues(x, y , distance): 
     values = []
