@@ -5,11 +5,14 @@ import math
 min = 0 #37
 max = 50 #47
 
-df = pd.read_csv('paper3.csv')
+df = pd.read_csv('test.csv')
 # df['Distance'] = pd.to_numeric(df['Distance'])
 
 def getValues(x, y , distance): 
     values = []
+    # values.append(x)
+    # values.append(y)
+    # values.append(distance)
     values.append(distance * math.cos(math.radians(y)) * math.sin(math.radians(x)))
     values.append(distance * math.cos(math.radians(x)) * math.sin(math.radians(y)))
     values.append(distance * math.cos(math.radians(y)) * math.cos(math.radians(x)))
@@ -31,5 +34,5 @@ for x in df.index:
 df.plot(kind = 'scatter', x = 'x', y = 'y', c = 'Distance', colormap= 'viridis')
 
 plt.xlim([-20,20])
-plt.ylim([-2,34])
+plt.ylim([-2,52])
 plt.show()
