@@ -1,38 +1,54 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import math
+import serial
 
 min = 0 #37
-max = 50 #47
+max = 25 #47
 
-df = pd.read_csv('trials/r1.csv')
-# df['Distance'] = pd.to_numeric(df['Distance'])
+stepAngle = 3
+ser = serial.Serial('/dev/cu.usbserial-10')
+# df = pd.read_csv('test.csv')
+dfTest = pd.DataFrame(columns=['x', 'y', 'Distance'])
 
 def getValues(x, y , distance): 
     values = []
-    values.append(x)
-    values.append(y)
-    values.append(distance)
-    # values.append(distance * math.cos(math.radians(y)) * math.sin(math.radians(x)))
-    # values.append(distance * math.cos(math.radians(x)) * math.sin(math.radians(y)))
-    # values.append(distance * math.cos(math.radians(y)) * math.cos(math.radians(x)))
+    # values.append(x)
+    # values.append(y)
+    # values.append(distance)
+    values.append(distance * math.cos(math.radians(y)) * math.sin(math.radians(x)))
+    values.append(distance * math.cos(math.radians(x)) * math.sin(math.radians(y)))
+    values.append(distance * math.cos(math.radians(y)) * math.cos(math.radians(x)))
     return values
 
-for x in df.index:
-    values = getValues(df.loc[x, 'x'], df.loc[x, 'y'], df.loc[x, 'Distance'])
-
-    # filter range
-    if values[2] < min or values[2] > max:
-        df.drop(x, inplace = True)
+while(ser.isOpen()):
+    line = ser.readline().decode("utf-8").rstrip()
+    print(line)
+    if line == 'end':
+        break
+    line = line.split(',')
     
-    # convert from angle to distance
-    else:
-        df.loc[x, 'x'] = values[0]
-        df.loc[x, 'y'] = values[1]
-        df.loc[x, 'Distance'] = values[2]
+    values = getValues(float(line[0]) * stepAngle, float(line[1]) * stepAngle, float(line[2]))
+    if values[2] > min and values[2] < max:
+        dfTest.loc[len(dfTest.index)] = values
+    
+print("connection closed")
 
-df.plot(kind = 'scatter', x = 'x', y = 'y', c = 'Distance', colormap= 'viridis')
+# for x in df.index:
+#     values = getValues(stepAngle* df.loc[x, 'x'], stepAngle * df.loc[x, 'y'], df.loc[x, 'Distance'])
 
-plt.xlim([-20,20])
-plt.ylim([-2,52])
+#     # filter range
+#     if values[2] < min or values[2] > max:
+#         df.drop(x, inplace = True)
+    
+#     # convert from angle to distance
+#     else:
+#         df.loc[x, 'x'] = values[0]
+#         df.loc[x, 'y'] = values[1]
+#         df.loc[x, 'Distance'] = values[2]
+
+dfTest.plot(kind = 'scatter', x = 'x', y = 'y', c = 'Distance', colormap= 'viridis')
+
+plt.xlim([-15,15])
+plt.ylim([-2,20])
 plt.show()

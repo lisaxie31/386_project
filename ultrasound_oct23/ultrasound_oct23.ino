@@ -14,6 +14,14 @@ long duration; // variable for the duration of sound wave travel
 int distance; // variable for the distance measurement
 
 void setup() {
+  Serial.begin(9600);
+
+  stepper_x.setSpeed(10);         // set initial speed
+  stepper_y.setSpeed(10);  
+
+  pinMode(buttonPin, INPUT);
+  
+  
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an OUTPUT
   pinMode(echoPin, INPUT); // Sets the echoPin as an INPUT
   Serial.begin(9600); // // Serial Communication is starting with 9600 of baudrate speed
