@@ -3,23 +3,22 @@ import matplotlib.pyplot as plt
 import math
 import serial
 
-min = 0 #37
-max = 25 #47
+min = 0 
+max = 25 
 
 stepAngle = 3
 
 def getValues(x, y , distance): 
     values = []
-    # values.append(x)
-    # values.append(y)
-    # values.append(distance)
     values.append(distance * math.cos(math.radians(y)) * math.sin(math.radians(x)))
     values.append(distance * math.cos(math.radians(x)) * math.sin(math.radians(y)))
     values.append(distance * math.cos(math.radians(y)) * math.cos(math.radians(x)))
     return values
 
-collectData = 0
-if collectData == 1: 
+mode = 0
+
+# collects data
+if mode == 0: 
     ser = serial.Serial('/dev/cu.usbserial-10')
     df = pd.DataFrame(columns=['x', 'y', 'Distance'])
     while(ser.isOpen()):
@@ -35,7 +34,8 @@ if collectData == 1:
             df.loc[len(df.index)] = values
     print("connection closed")
 
-else:
+# plots existing data
+if mode == 1: 
     df = pd.read_csv('trials/L4.csv')
     for x in df.index:
         values = getValues(stepAngle* df.loc[x, 'x'], stepAngle * df.loc[x, 'y'], df.loc[x, 'Distance'])
@@ -54,6 +54,6 @@ else:
 df.to_csv('processed_data.csv', encoding='utf-8', index=False)
 df.plot(kind = 'scatter', x = 'x', y = 'y', c = 'Distance', colormap= 'viridis')
 
-plt.xlim([-10,10])
-plt.ylim([-1,10])
+plt.xlim([-15,15])
+plt.ylim([-1,15])
 plt.show()
