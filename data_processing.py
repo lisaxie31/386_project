@@ -8,6 +8,7 @@ max = 25
 
 stepAngle = 3
 
+# convert angles to x, y distance and perpendicular distance 
 def getValues(x, y , distance): 
     values = []
     values.append(distance * math.cos(math.radians(y)) * math.sin(math.radians(x)))
@@ -15,27 +16,32 @@ def getValues(x, y , distance):
     values.append(distance * math.cos(math.radians(y)) * math.cos(math.radians(x)))
     return values
 
-mode = 0
+# 0 - collect data from arduino
+# 1 - plot existing data
+mode = 0 
 
-# collects data
+# collect data from arduino
 if mode == 0: 
     ser = serial.Serial('/dev/cu.usbserial-10')
     df = pd.DataFrame(columns=['x', 'y', 'Distance'])
+    
     while(ser.isOpen()):
+        # parse data from serial monitor
         line = ser.readline().decode("utf-8").rstrip()
         print(line)
-
         if line == 'end':
             break
         line = line.split(',')
+
         values = getValues(float(line[0]) * stepAngle, float(line[1]) * stepAngle, float(line[2]))
         
+        # filter data outside target range
         if values[2] > min and values[2] < max:
             df.loc[len(df.index)] = values
     print("connection closed")
 
-# plots existing data
-if mode == 1: 
+# plot existing data
+elif mode == 1: 
     df = pd.read_csv('trials/L4.csv')
     for x in df.index:
         values = getValues(stepAngle* df.loc[x, 'x'], stepAngle * df.loc[x, 'y'], df.loc[x, 'Distance'])
