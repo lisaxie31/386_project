@@ -16,17 +16,20 @@ void setup()
 
   TCCR1A = 0;
   TCCR2B = 0;
-  TCCR2B |= B00001111; // 1024 = B00000111
-  TIMSK2 |= B00000100;
+  TCCR2B |= B00000100; // prescaler = 256
+                       // 1/(16 MHz/256)*10 = 0.16 ms = 160 us
+  TIMSK2 |= B00000100; // enable compare match B
+
+//  TCCR2B |= B00000100; // prescaler = 64
+//                       // 1/(16 MHz/64)*14 = 56 us
+//  TIMSK2 |= B00000100;
   sei();
-  
-  
 }
 
 void loop()
 {
-  p = map(p, 0, 100, 0, 512);
-  OCR2B = p;
+  OCR2B = 10; // 6kHz
+  // OCR2B = 14; // 18 kHz
   
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);

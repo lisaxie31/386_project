@@ -25,10 +25,11 @@ void loop() {
   duration = pulseIn(echoPin, HIGH);
   // Calculating the distance
   distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+  distance = max(0, distance * 0.5363 - 26.13);
   
   // Displays the distance on the Serial Monitor
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
-  delay(100);
+//  delay(100);
 }
